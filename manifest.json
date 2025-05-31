@@ -1,0 +1,10 @@
+{
+    "name": "bot",
+    "displayName": "bot",
+    "botTitle": "Office Assistant Bot",
+    "bot": true,
+    "scopes": {
+        "botScopes": ["messages:read", "messages:write"],
+        "userScopes": ["messages:read"]
+    }
+}
