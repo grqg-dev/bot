@@ -2,3 +2,5 @@ node_modules
 dist
 .pumbleapprc
 tokens.json
+.DS_Store
+*.local

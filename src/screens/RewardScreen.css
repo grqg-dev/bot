@@ -1,0 +1,81 @@
+.reward-screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  background: linear-gradient(180deg, #fff8e1 0%, #ffe082 50%, #ffcc80 100%);
+  padding: 24px;
+}
+
+.reward-screen__robot {
+  width: 35%;
+  height: 70%;
+  min-width: 200px;
+}
+
+.reward-screen__panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.reward-screen__stars {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+  animation: stars-bounce 0.6s ease;
+}
+
+@keyframes stars-bounce {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.reward-screen__new-parts {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.reward-screen__label {
+  font-size: 1.2rem;
+  color: var(--color-text-muted);
+}
+
+.reward-screen__parts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  max-width: 400px;
+}
+
+.reward-screen__part-btn {
+  min-width: 96px;
+  min-height: 96px;
+  font-size: 2rem;
+}
+
+.reward-screen__part-btn--new {
+  animation: part-sparkle 1s ease infinite;
+}
+
+.reward-screen__part-btn--equipped {
+  border-color: var(--color-success);
+  background: #e8f5e9;
+}
+
+@keyframes part-sparkle {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.6); }
+  50% { box-shadow: 0 0 16px 4px rgba(255, 215, 0, 0.4); }
+}
+
+.reward-screen__actions {
+  display: flex;
+  gap: 24px;
+  margin-top: 16px;
+}
