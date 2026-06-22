@@ -8,8 +8,15 @@ import {
   getDefaultEquipped,
   ROBOT_PARTS,
 } from './reward/robotParts';
+import {
+  loadParentSettings,
+  saveParentSettings,
+  type ParentSettings,
+} from './settings/parentSettings';
 
 const STORAGE_KEY = 'reading_buddy_progress_v1';
+const initialSettings = loadParentSettings();
+audioService.applyParentSettings(initialSettings);
 
 const defaultProgress: Progress = {
   completedLessonIds: [],
@@ -63,6 +70,8 @@ interface AppState {
   setAvatarState: (state: AvatarState) => void;
   setRobotName: (name: string) => void;
   setTtsVoiceUri: (uri: string | null) => void;
+  setTtsBackend: (backend: ParentSettings['ttsBackend']) => void;
+  setRemoteTtsUrl: (url: string) => void;
   setParentGateTarget: (target: 'settings' | 'pause' | null) => void;
 
   startLesson: (lessonId: string) => void;
@@ -80,8 +89,8 @@ export const useStore = create<AppState>((set, get) => ({
   screen: 'boot',
   progress: loadProgress(),
   avatarState: 'idle',
-  robotName: 'Beep',
-  ttsVoiceUri: null,
+  robotName: initialSettings.robotName,
+  ttsVoiceUri: initialSettings.ttsVoiceUri,
   audioUnlocked: false,
   lessonSession: null,
   parentGateTarget: null,
@@ -96,11 +105,29 @@ export const useStore = create<AppState>((set, get) => ({
 
   setAvatarState: (avatarState) => set({ avatarState }),
 
-  setRobotName: (robotName) => set({ robotName }),
+  setRobotName: (robotName) => {
+    const settings = { ...loadParentSettings(), robotName: robotName || 'Beep' };
+    saveParentSettings(settings);
+    set({ robotName: settings.robotName });
+  },
 
   setTtsVoiceUri: (ttsVoiceUri) => {
     audioService.setPreferredVoiceUri(ttsVoiceUri);
+    const settings = { ...loadParentSettings(), ttsVoiceUri };
+    saveParentSettings(settings);
     set({ ttsVoiceUri });
+  },
+
+  setTtsBackend: (ttsBackend) => {
+    audioService.setTtsBackend(ttsBackend);
+    const settings = { ...loadParentSettings(), ttsBackend };
+    saveParentSettings(settings);
+  },
+
+  setRemoteTtsUrl: (remoteTtsUrl) => {
+    audioService.setRemoteTtsUrl(remoteTtsUrl);
+    const settings = { ...loadParentSettings(), remoteTtsUrl: remoteTtsUrl || '/api/tts' };
+    saveParentSettings(settings);
   },
 
   setParentGateTarget: (parentGateTarget) => set({ parentGateTarget }),

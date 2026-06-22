@@ -48,7 +48,33 @@ Replace files in `public/audio/` with real recordings. Run the dev build to see 
 | 1 | Done | buildActivities, Listen/Pick/Blend, L01–L02, stars, localStorage |
 | 2 | Done | Trace, BuildWord, SightWord, ReviewGame, HomeMap, robot parts |
 | 3 | Done | Full audio manifest, ParentGate, Settings, polish |
-| 4 | Later | Remote TTS backend (AWS Polly / ElevenLabs) |
+| 4 | Done | Remote TTS backend, Lambda handler, batch clip generation |
+
+## Phase 4 — Premium voice
+
+Remote TTS for dynamic instructions/praise (clips still use pre-made MP3s at runtime).
+
+### Local dev with Polly
+
+```bash
+cp .env.example .env   # add AWS credentials
+npm run dev:all        # starts TTS API (:3001) + Vite (:5173)
+```
+
+In Settings (parent gate): set TTS backend → **Remote**, URL `/api/tts`, tap **Test voice**.
+
+### Deploy Lambda
+
+See `lambda/tts/README.md`. Point Settings → Remote TTS URL at your API Gateway endpoint.
+
+### Batch-generate clips via Polly
+
+```bash
+npm run dev:tts        # in one terminal
+npm run generate-audio:tts   # in another (requires AWS creds)
+```
+
+Uses phoneme approximations for `sound_*` keys — replace with human recordings for best quality.
 
 ## Verify
 

@@ -5,9 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:tts": "node server/dev-tts-server.mjs",
+    "dev:all": "node scripts/dev-all.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "generate-audio": "node scripts/generate-placeholder-audio.mjs"
+    "generate-audio": "node scripts/generate-placeholder-audio.mjs",
+    "generate-audio:tts": "node scripts/batch-generate-clips.mjs",
+    "validate-curriculum": "npx tsx scripts/validate-curriculum.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.0.6",
@@ -18,6 +22,7 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@aws-sdk/client-polly": "^3.787.0",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@types/three": "^0.175.0",

@@ -1,14 +1,15 @@
 import { INSTRUCTIONS } from './instructions';
-
-export type TtsBackend = 'webspeech' | 'remote';
+import type { TtsBackend } from '../settings/parentSettings';
 
 type PlayStateListener = (playing: boolean) => void;
 
 class AudioServiceImpl {
   private audioContext: AudioContext | null = null;
   private currentAudio: HTMLAudioElement | null = null;
+  private currentTtsAudio: HTMLAudioElement | null = null;
   private unlocked = false;
   private ttsBackend: TtsBackend = 'webspeech';
+  private remoteTtsUrl = '/api/tts';
   private playStateListeners = new Set<PlayStateListener>();
   private preferredVoice: SpeechSynthesisVoice | null = null;
 
@@ -29,6 +30,14 @@ class AudioServiceImpl {
     return this.ttsBackend;
   }
 
+  setRemoteTtsUrl(url: string): void {
+    this.remoteTtsUrl = url || '/api/tts';
+  }
+
+  getRemoteTtsUrl(): string {
+    return this.remoteTtsUrl;
+  }
+
   setPreferredVoiceUri(uri: string | null): void {
     if (!uri) {
       this.preferredVoice = null;
@@ -36,6 +45,16 @@ class AudioServiceImpl {
     }
     const voices = window.speechSynthesis.getVoices();
     this.preferredVoice = voices.find((v) => v.voiceURI === uri) ?? null;
+  }
+
+  applyParentSettings(settings: {
+    ttsBackend: TtsBackend;
+    ttsVoiceUri: string | null;
+    remoteTtsUrl: string;
+  }): void {
+    this.setTtsBackend(settings.ttsBackend);
+    this.setRemoteTtsUrl(settings.remoteTtsUrl);
+    this.setPreferredVoiceUri(settings.ttsVoiceUri);
   }
 
   async unlock(): Promise<void> {
@@ -79,28 +98,30 @@ class AudioServiceImpl {
       return;
     }
 
+    return this.playAudioUrl(url);
+  }
+
+  private playAudioUrl(url: string): Promise<void> {
     return new Promise((resolve) => {
       const audio = new Audio(url);
       this.currentAudio = audio;
       this.setPlaying(true);
 
-      audio.onended = () => {
+      const cleanup = () => {
         if (this.currentAudio === audio) this.currentAudio = null;
         this.setPlaying(false);
-        resolve();
-      };
-      audio.onerror = () => {
-        console.warn(`[Reading Buddy] Failed to play clip: ${key}`);
-        if (this.currentAudio === audio) this.currentAudio = null;
-        this.setPlaying(false);
-        this.speakText(INSTRUCTIONS.skipMissing);
         resolve();
       };
 
+      audio.onended = cleanup;
+      audio.onerror = () => {
+        console.warn(`[Reading Buddy] Failed to play: ${url}`);
+        cleanup();
+      };
+
       void audio.play().catch(() => {
-        console.warn(`[Reading Buddy] Playback blocked for: ${key}`);
-        this.setPlaying(false);
-        resolve();
+        console.warn(`[Reading Buddy] Playback blocked: ${url}`);
+        cleanup();
       });
     });
   }
@@ -129,10 +150,13 @@ class AudioServiceImpl {
   speakText(text: string): void {
     this.stopTts();
     if (this.ttsBackend === 'remote') {
-      // TODO(ask human): wire Lambda URL for remote TTS backend
-      console.warn('[Reading Buddy] Remote TTS not configured, falling back to webspeech');
+      void this.speakTextRemote(text);
+      return;
     }
+    this.speakTextWebSpeech(text);
+  }
 
+  private speakTextWebSpeech(text: string): void {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.9;
     if (this.preferredVoice) utterance.voice = this.preferredVoice;
@@ -142,6 +166,50 @@ class AudioServiceImpl {
     utterance.onerror = () => this.setPlaying(false);
 
     window.speechSynthesis.speak(utterance);
+  }
+
+  private async speakTextRemote(text: string): Promise<void> {
+    try {
+      const res = await fetch(this.remoteTtsUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Remote TTS HTTP ${res.status}`);
+      }
+
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+
+      await new Promise<void>((resolve) => {
+        const audio = new Audio(objectUrl);
+        this.currentTtsAudio = audio;
+        this.setPlaying(true);
+
+        const done = () => {
+          URL.revokeObjectURL(objectUrl);
+          if (this.currentTtsAudio === audio) this.currentTtsAudio = null;
+          this.setPlaying(false);
+          resolve();
+        };
+
+        audio.onended = done;
+        audio.onerror = () => {
+          console.warn('[Reading Buddy] Remote TTS playback failed');
+          done();
+        };
+
+        void audio.play().catch(() => {
+          console.warn('[Reading Buddy] Remote TTS play blocked');
+          done();
+        });
+      });
+    } catch (err) {
+      console.warn('[Reading Buddy] Remote TTS failed, falling back to webspeech:', err);
+      this.speakTextWebSpeech(text);
+    }
   }
 
   stopAll(): void {
@@ -160,6 +228,11 @@ class AudioServiceImpl {
 
   private stopTts(): void {
     window.speechSynthesis.cancel();
+    if (this.currentTtsAudio) {
+      this.currentTtsAudio.pause();
+      this.currentTtsAudio.currentTime = 0;
+      this.currentTtsAudio = null;
+    }
   }
 }
 

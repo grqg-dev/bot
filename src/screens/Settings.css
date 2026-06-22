@@ -52,3 +52,25 @@
 .settings__danger:hover {
   background: #c62828;
 }
+
+.settings__test {
+  padding: 10px 20px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.settings__hint {
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 4px;
+}
+
+.settings__hint code {
+  background: #eee;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
