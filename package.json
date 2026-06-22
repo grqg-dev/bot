@@ -9,8 +9,11 @@
     "dev:all": "node scripts/dev-all.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "generate-audio": "node scripts/generate-placeholder-audio.mjs",
-    "generate-audio:tts": "node scripts/batch-generate-clips.mjs",
+    "generate-audio": "node scripts/generate-all-audio.mjs",
+    "generate-audio:force": "node scripts/generate-all-audio.mjs -- --force",
+    "generate-audio:dry-run": "node scripts/generate-all-audio.mjs -- --dry-run",
+    "generate-audio:placeholder": "node scripts/generate-placeholder-audio.mjs",
+    "verify-audio": "node scripts/verify-audio.mjs",
     "validate-curriculum": "npx tsx scripts/validate-curriculum.ts"
   },
   "dependencies": {

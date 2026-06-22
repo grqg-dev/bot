@@ -1,40 +1,43 @@
 /**
- * Shared TTS synthesis — used by dev server and AWS Lambda.
+ * Shared TTS synthesis — used by dev server, Lambda, and generate-all-audio.
  * Supports AWS Polly (default) with optional ElevenLabs via TTS_PROVIDER env.
  */
 
-const PHONEME_SPEAK = {
-  s: 'ssss', a: 'aaa', t: 'tuh', p: 'puh', i: 'ih', n: 'nnn', m: 'mmm', d: 'duh',
-  g: 'guh', o: 'ah', c: 'kuh', k: 'kuh', e: 'eh', u: 'uh', r: 'rrr', h: 'huh',
-  b: 'buh', f: 'fff', l: 'lll',
-};
+import { speechForClipKey } from './clip-speech.mjs';
 
-export function textForClipKey(key) {
-  if (key.startsWith('sound_')) {
-    const phoneme = key.slice('sound_'.length);
-    return PHONEME_SPEAK[phoneme] ?? phoneme;
-  }
-  if (key.startsWith('word_')) return key.slice('word_'.length);
-  if (key.startsWith('sight_')) return key.slice('sight_'.length);
-  if (key.startsWith('blend_')) {
-    const word = key.slice('blend_'.length);
-    return [...word].join(' ... ') + ' ... ' + word;
-  }
-  return key;
-}
+export { speechForClipKey, textForClipKey } from './clip-speech.mjs';
 
-export async function synthesizeSpeech(text, options = {}) {
+export async function synthesizeSpeech(input, options = {}) {
   const provider = options.provider ?? process.env.TTS_PROVIDER ?? 'polly';
   const voiceId = options.voiceId ?? process.env.POLLY_VOICE_ID ?? 'Joanna';
   const engine = options.engine ?? process.env.POLLY_ENGINE ?? 'neural';
+  const textType = options.textType ?? 'text';
+
+  const text = typeof input === 'string' ? input : input.text;
+  const resolvedTextType = typeof input === 'object' && input.textType ? input.textType : textType;
 
   if (provider === 'elevenlabs') {
-    return synthesizeElevenLabs(text, options);
+    return synthesizeElevenLabs(stripSsml(text), options);
   }
-  return synthesizePolly(text, { voiceId, engine });
+  return synthesizePolly(text, { voiceId, engine, textType: resolvedTextType });
 }
 
-async function synthesizePolly(text, { voiceId, engine }) {
+/** Generate MP3 for a manifest clip key (sound_*, word_*, sight_*, blend_*). */
+export async function synthesizeClipKey(key, options = {}) {
+  const speech = speechForClipKey(key);
+  return synthesizeSpeech(speech, options);
+}
+
+function stripSsml(ssml) {
+  return ssml
+    .replace(/<speak>/gi, '')
+    .replace(/<\/speak>/gi, '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+async function synthesizePolly(text, { voiceId, engine, textType }) {
   const { PollyClient, SynthesizeSpeechCommand } = await import('@aws-sdk/client-polly');
   const client = new PollyClient({
     region: process.env.AWS_REGION ?? 'us-east-1',
@@ -43,6 +46,7 @@ async function synthesizePolly(text, { voiceId, engine }) {
   const result = await client.send(
     new SynthesizeSpeechCommand({
       Text: text,
+      TextType: textType === 'ssml' ? 'ssml' : 'text',
       OutputFormat: 'mp3',
       VoiceId: voiceId,
       Engine: engine,
@@ -94,18 +98,24 @@ export async function handleTtsRequest(body) {
     err.statusCode = 400;
     throw err;
   }
-  if (text.length > 500) {
-    const err = new Error('Text too long (max 500 chars)');
+  if (text.length > 2000) {
+    const err = new Error('Text too long (max 2000 chars)');
     err.statusCode = 400;
     throw err;
   }
 
-  const audio = await synthesizeSpeech(text.trim(), {
-    provider: body.provider,
-    voiceId: body.voiceId,
-    engine: body.engine,
-    elevenLabsVoiceId: body.elevenLabsVoiceId,
-  });
+  const audio = await synthesizeSpeech(
+    {
+      text: text.trim(),
+      textType: body.textType ?? (text.trim().startsWith('<speak>') ? 'ssml' : 'text'),
+    },
+    {
+      provider: body.provider,
+      voiceId: body.voiceId,
+      engine: body.engine,
+      elevenLabsVoiceId: body.elevenLabsVoiceId,
+    },
+  );
 
   return audio;
 }

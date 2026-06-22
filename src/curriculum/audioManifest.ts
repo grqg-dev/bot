@@ -61,7 +61,7 @@ export function warnMissingClipsOnLoad(): void {
   void checkMissingClips().then((missing) => {
     if (missing.length > 0) {
       console.warn(
-        '[Reading Buddy] Missing audio clips (%d). Record these files in public/audio/:',
+        '[Reading Buddy] Missing audio clips (%d). Generate them with: npm run generate-audio',
         missing.length,
         missing,
       );
