@@ -1,20 +1,37 @@
 {
-  "name": "bot",
+  "name": "reading-buddy",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/main.js",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "start": "tsc && node dist/main.js",
-    "dev": "pumble-cli"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "typescript": "^5.3.3",
-    "pumble-cli": "0.0.29"
+    "dev": "vite",
+    "dev:tts": "node server/dev-tts-server.mjs",
+    "dev:all": "node scripts/dev-all.mjs",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "generate-audio": "node scripts/generate-all-audio.mjs",
+    "generate-audio:force": "node scripts/generate-all-audio.mjs -- --force",
+    "generate-audio:dry-run": "node scripts/generate-all-audio.mjs -- --dry-run",
+    "generate-audio:placeholder": "node scripts/generate-placeholder-audio.mjs",
+    "verify-audio": "node scripts/verify-audio.mjs",
+    "validate-curriculum": "npx tsx scripts/validate-curriculum.ts"
   },
   "dependencies": {
-    "pumble-sdk": "0.0.29"
+    "@react-three/drei": "^10.0.6",
+    "@react-three/fiber": "^9.1.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "three": "^0.175.0",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-polly": "^3.787.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@types/three": "^0.175.0",
+    "@vitejs/plugin-react": "^4.4.1",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.3",
+    "vite-plugin-pwa": "^0.21.2"
   }
 }

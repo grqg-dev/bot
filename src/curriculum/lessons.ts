@@ -1,0 +1,28 @@
+import type { LessonContent } from './types';
+
+export const LESSONS: LessonContent[] = [
+  { id: 'L01', title: 'Sounds: s a t p', newSounds: ['s', 'a', 't', 'p'], reviewSounds: [],
+    targetWords: ['at', 'sat', 'pat', 'tap'], sightWords: ['I'] },
+  { id: 'L02', title: 'Sounds: i n', newSounds: ['i', 'n'], reviewSounds: ['s', 'a', 't', 'p'],
+    targetWords: ['sit', 'tin', 'nip', 'pin', 'tap'], sightWords: ['a'] },
+  { id: 'L03', title: 'Sounds: m d', newSounds: ['m', 'd'], reviewSounds: ['s', 'a', 't', 'p', 'i', 'n'],
+    targetWords: ['mat', 'man', 'mad', 'dad', 'dip', 'sad'], sightWords: ['the'] },
+  { id: 'L04', title: 'Review + sight words', newSounds: [], reviewSounds: ['s', 'a', 't', 'p', 'i', 'n', 'm', 'd'],
+    targetWords: ['map', 'nap', 'sip', 'dim', 'pad'], sightWords: ['to', 'see'] },
+  { id: 'L05', title: 'Sounds: g o', newSounds: ['g', 'o'], reviewSounds: ['s', 'a', 't', 'i', 'n', 'm', 'd', 'p'],
+    targetWords: ['got', 'dog', 'dot', 'top', 'pot', 'gas'], sightWords: ['go'] },
+  { id: 'L06', title: 'Sounds: c k', newSounds: ['c', 'k'], reviewSounds: ['a', 't', 'i', 'n', 'o', 'g', 'd', 'p'],
+    targetWords: ['cat', 'can', 'cot', 'kit', 'kid', 'cap'], sightWords: ['my'] },
+  { id: 'L07', title: 'Review + blends practice', newSounds: [], reviewSounds: ['s', 'a', 't', 'p', 'i', 'n', 'm', 'd', 'g', 'o', 'c', 'k'],
+    targetWords: ['dog', 'cat', 'pig', 'sock', 'tap', 'man'], sightWords: ['and'] },
+  { id: 'L08', title: 'Sounds: e u', newSounds: ['e', 'u'], reviewSounds: ['s', 'a', 't', 'p', 'i', 'n', 'm', 'd', 'g', 'o', 'c', 'k'],
+    targetWords: ['pet', 'net', 'bed', 'cup', 'mud', 'sun'], sightWords: ['is'] },
+  { id: 'L09', title: 'Sounds: r h', newSounds: ['r', 'h'], reviewSounds: ['a', 'e', 'i', 'o', 'u', 't', 'p', 'n', 'm', 'd', 'c', 'g'],
+    targetWords: ['run', 'rat', 'red', 'hat', 'hot', 'hen'], sightWords: ['it'] },
+  { id: 'L10', title: 'Sounds: b f l', newSounds: ['b', 'f', 'l'], reviewSounds: ['a', 'e', 'i', 'o', 'u', 'r', 'h', 't', 'n', 'm', 'd'],
+    targetWords: ['bat', 'bus', 'fan', 'fun', 'log', 'lip'], sightWords: ['up', 'we'] },
+  { id: 'L11', title: 'Big review', newSounds: [], reviewSounds: ['s', 'a', 't', 'p', 'i', 'n', 'm', 'd', 'g', 'o', 'c', 'k', 'e', 'u', 'r', 'h', 'b', 'f', 'l'],
+    targetWords: ['fish', 'dog', 'sun', 'cat', 'bed', 'run'], sightWords: ['look', 'here'] },
+  { id: 'L12', title: 'Read a tiny sentence', newSounds: [], reviewSounds: ['s', 'a', 't', 'p', 'i', 'n', 'm', 'd', 'g', 'o', 'c', 'k', 'e', 'u', 'r', 'h', 'b', 'f', 'l'],
+    targetWords: ['cat', 'sat', 'mat', 'dog', 'ran'], sightWords: ['the', 'a', 'I', 'can', 'see'] },
+];

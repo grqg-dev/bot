@@ -1,0 +1,31 @@
+.star-burst {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.star-burst__star {
+  position: absolute;
+  font-size: 2.5rem;
+  animation: star-pop 0.8s ease-out var(--delay) both;
+  transform: rotate(var(--angle)) translateY(-80px);
+}
+
+@keyframes star-pop {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateY(0) scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: rotate(var(--angle)) translateY(-100px) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateY(-140px) scale(0.8);
+  }
+}

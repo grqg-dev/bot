@@ -1,0 +1,30 @@
+.lesson-runner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background: var(--color-bg);
+}
+
+.lesson-runner__robot {
+  width: 30%;
+  min-width: 180px;
+  height: 100%;
+}
+
+.lesson-runner__activity {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.lesson-runner__pause {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  min-width: 72px;
+  min-height: 72px;
+  font-size: 1.5rem;
+  opacity: 0.5;
+  z-index: 10;
+}

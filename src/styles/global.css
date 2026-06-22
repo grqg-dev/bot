@@ -1,0 +1,127 @@
+:root {
+  --color-bg: #e8f4fc;
+  --color-surface: #ffffff;
+  --color-primary: #4a90d9;
+  --color-primary-dark: #2c6cb0;
+  --color-primary-light: #b8d9f5;
+  --color-text: #1a3a5c;
+  --color-text-muted: #5a7a9a;
+  --color-muted: #b0c4d8;
+  --color-success: #4caf50;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.app {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.boot-screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  background: linear-gradient(180deg, #e8f4fc 0%, #c5dff0 100%);
+}
+
+.boot-screen__robot {
+  width: 50%;
+  height: 50%;
+  max-width: 400px;
+}
+
+.boot-screen__start {
+  font-size: 4rem;
+  min-width: 120px;
+  min-height: 120px;
+}
+
+.portrait-warning {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  background: #4a90d9;
+  color: #fff;
+}
+
+.portrait-warning__icon {
+  font-size: 5rem;
+  animation: rotate-hint 2s ease-in-out infinite;
+}
+
+@keyframes rotate-hint {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(90deg); }
+}
+
+.dev-controls {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  display: flex;
+  gap: 6px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.7);
+  font-size: 11px;
+  flex-wrap: wrap;
+}
+
+.dev-controls button {
+  padding: 4px 8px;
+  border: 1px solid #666;
+  background: #333;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dev-controls__active {
+  background: #4a90d9 !important;
+  border-color: #4a90d9 !important;
+}
+
+.parent-only {
+  /* Parent-facing text is allowed but hidden from child UX emphasis */
+}
+
+.parent-only-screen {
+  user-select: text;
+  -webkit-user-select: text;
+}
